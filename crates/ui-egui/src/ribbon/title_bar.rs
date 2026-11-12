@@ -126,6 +126,12 @@ pub fn title_bar(app: &mut SheetApp, ui: &mut Ui) {
                 if __k.clicked() {
                     app.open_dialog("commandSearch", json!({}));
                 }
+                if crate::zenda::ON {
+                    let lang = app.ui.language;
+                    if crate::zenda::theo_button(ui, lang.tr("Ask Theo for help"), lang.tr("Ask Theo about what is on screen")).clicked() {
+                        app.zenda.push("work.theo", crate::zenda::theo_context(app));
+                    }
+                }
                 let share = small_button(ui, Icon::Share, "Share", "Share: export or save a copy", true);
                 egui::Popup::menu(&share).show(|ui| {
                     if ui.button("Export as PDF…").clicked() {
