@@ -517,3 +517,25 @@ mod tests {
         assert_eq!(name_sort_key("Čeština"), "cestina");
     }
 }
+
+#[cfg(test)]
+mod zenda_coverage {
+    #[test]
+    fn es_and_pt_cover_every_catalog_key_without_losing_placeholders() {
+        let keys: Vec<String> = serde_json::from_str(include_str!("../../../zenda/catalog-keys.json")).unwrap();
+        let placeholders = |text: &str| {
+            let mut fields: Vec<String> = text.split('{').skip(1).filter_map(|s| s.split_once('}').map(|(field, _)| field.to_owned())).collect();
+            fields.sort();
+            fields
+        };
+        for key in keys {
+            for (language, translated) in [("es", super::es::translate(&key)), ("pt-BR", super::pt::translate(&key))] {
+                let text = translated.unwrap_or_else(|| panic!("{language} missing {key:?}"));
+                assert_eq!(placeholders(&key), placeholders(text), "{language}: {key}");
+                if !key.contains('\n') && !["AutoSum", "PivotTable"].contains(&key.as_str()) {
+                    assert!(!text.contains('\n'), "{language}: {key:?} => {text:?}");
+                }
+            }
+        }
+    }
+}
