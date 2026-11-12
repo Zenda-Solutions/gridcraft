@@ -126,25 +126,30 @@ pub fn title_bar(app: &mut SheetApp, ui: &mut Ui) {
                 if __k.clicked() {
                     app.open_dialog("commandSearch", json!({}));
                 }
+                let share = small_button(ui, Icon::Share, "Share", "Share: export or save a copy", !crate::zenda::ON);
                 if crate::zenda::ON {
+                    share.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, true, app.ui.language.tr("Share")));
+                    if share.clicked() {
+                        app.run_or_alert("file.share", json!({}));
+                    }
                     let lang = app.ui.language;
                     if crate::zenda::theo_button(ui, lang.tr("Ask Theo for help"), lang.tr("Ask Theo about what is on screen")).clicked() {
                         app.zenda.push("work.theo", crate::zenda::theo_context(app));
                     }
-                }
-                let share = small_button(ui, Icon::Share, "Share", "Share: export or save a copy", true);
-                egui::Popup::menu(&share).show(|ui| {
-                    if ui.button("Export as PDF…").clicked() {
-                        app.run_or_alert("file.exportPdf", json!({}));
-                    }
-                    for (label, fmt) in
-                        [("Save a Copy as Excel Workbook (.xlsx)…", "xlsx"), ("Export as CSV…", "csv"), ("Export as Web Page (.html)…", "html")]
-                    {
-                        if ui.button(label).clicked() {
-                            app.open_dialog("saveCopy", json!({"format": fmt}));
+                } else {
+                    egui::Popup::menu(&share).show(|ui| {
+                        if ui.button("Export as PDF…").clicked() {
+                            app.run_or_alert("file.exportPdf", json!({}));
                         }
-                    }
-                });
+                        for (label, fmt) in
+                            [("Save a Copy as Excel Workbook (.xlsx)…", "xlsx"), ("Export as CSV…", "csv"), ("Export as Web Page (.html)…", "html")]
+                        {
+                            if ui.button(label).clicked() {
+                                app.open_dialog("saveCopy", json!({"format": fmt}));
+                            }
+                        }
+                    });
+                }
                 let __k = icon_button(ui, Icon::Comment, t.text_dim, "Comments", vec2(28.0, ch));
                 control_keytip(app, ui, &__k, "comments");
                 if __k.clicked() {

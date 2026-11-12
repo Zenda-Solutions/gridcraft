@@ -17,6 +17,11 @@ impl SheetApp {
     }
 
     pub(super) fn run_command(&mut self, id: &str, params: Json) -> Result<Json, String> {
+        if crate::zenda::ON && id == "file.share" {
+            self.settle_drafts()?;
+            self.zenda.push("work.share", crate::zenda::share_params(self));
+            return Ok(json!({"work": "share"}));
+        }
         let switches_window = id.starts_with("window.")
             || matches!(id, "view.newWindow" | "view.hideWindow" | "view.unhideWindow")
             || (id == "view.switchWindows" && ["window", "doc"].iter().any(|k| params.get(*k).is_some_and(|d| !d.is_null())));
