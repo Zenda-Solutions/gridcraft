@@ -13,7 +13,7 @@ type Entry = (&'static str, &'static str, Option<&'static str>);
 
 /// (label, command or `dialog:name`, accelerator). `-` is a separator.
 fn tree() -> Vec<(&'static str, Vec<Entry>)> {
-    vec![
+    let mut tree = vec![
         (
             "File",
             vec![
@@ -188,7 +188,13 @@ fn tree() -> Vec<(&'static str, Vec<Entry>)> {
                 ("Join the ArtCraft Discord…", "url:https://discord.gg/artcraft", None),
             ],
         ),
-    ]
+    ];
+    if gridcraft_ui_egui::zenda::ON {
+        for (_, entries) in &mut tree {
+            entries.retain(|(_, command, _)| !command.starts_with("url:https://discord.") && *command != "app.checkForUpdates");
+        }
+    }
+    tree
 }
 
 pub struct NativeMenu {

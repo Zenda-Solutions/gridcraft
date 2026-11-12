@@ -25,6 +25,9 @@ impl Default for Runtime {
 
 /// Ask for a check; the next frame's `tick` starts it. A manual one reports every outcome.
 pub(crate) fn start(app: &mut SheetApp, manual: bool) {
+    if crate::zenda::ON {
+        return;
+    }
     if manual {
         app.updates_rt.manual = true;
     } else {
@@ -33,6 +36,9 @@ pub(crate) fn start(app: &mut SheetApp, manual: bool) {
 }
 
 pub(crate) fn tick(app: &mut SheetApp, ctx: &egui::Context) {
+    if crate::zenda::ON {
+        return;
+    }
     let rt = &mut app.updates_rt;
     if std::mem::take(&mut rt.manual) {
         rt.updater.check_now(ctx);
@@ -53,6 +59,9 @@ pub(crate) fn tick(app: &mut SheetApp, ctx: &egui::Context) {
 }
 
 pub(crate) fn show(app: &mut SheetApp, ctx: &egui::Context) {
+    if crate::zenda::ON {
+        return;
+    }
     // The restart helper is scheduled before the app closes, so no update starts over unsaved work.
     let clean = !app.session.documents().iter().any(|d| d.is_dirty());
     match app.updates_rt.updater.show_if(ctx, clean) {
@@ -65,5 +74,17 @@ pub(crate) fn show(app: &mut SheetApp, ctx: &egui::Context) {
         // process has exited.
         Action::Close => ctx.send_viewport_cmd(egui::ViewportCommand::Close),
         Action::None => {}
+    }
+}
+
+#[cfg(test)]
+mod zenda_tests {
+    #[test]
+    fn work_disables_both_startup_and_manual_upstream_checks() {
+        let mut app = crate::SheetApp::new(gridcraft_engine::Session::new(), crate::Services::default());
+        super::start(&mut app, false);
+        super::start(&mut app, true);
+        assert_eq!(app.updates_rt.startup, !crate::zenda::ON);
+        assert_eq!(app.updates_rt.manual, !crate::zenda::ON);
     }
 }
