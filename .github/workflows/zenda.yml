@@ -30,6 +30,8 @@ jobs:
           "CRAFT_FONTS_DIR=$((Resolve-Path ..\craft-fonts).Path)" >> $env:GITHUB_ENV
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
+        with:
+          cache-on-failure: true
       - name: Zenda patch tests (both builds)
         run: |
           cargo test --config 'profile.dev.package.gridcraft-ui-egui.opt-level=0' -p gridcraft-ui-egui --lib zenda
