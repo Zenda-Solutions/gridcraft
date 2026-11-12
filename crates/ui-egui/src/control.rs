@@ -175,6 +175,7 @@ pub fn handle(app: &mut SheetApp, ctx: &egui::Context, method: &str, p: &Json) -
     let s = |k: &str| p.get(k).and_then(Json::as_str);
     let f = |k: &str| p.get(k).and_then(Json::as_f64).unwrap_or(0.0) as f32;
     let out = match method {
+        "work.events" if crate::zenda::ON => ok(json!({"events": app.zenda.drain()})),
         "engine.execute" | "command" | "ui.menu.invoke" => {
             let Some(id) = s("command").or(s("id")) else { return err("missing `command`") };
             let params = p.get("params").cloned().unwrap_or(json!({}));
@@ -214,6 +215,10 @@ pub fn handle(app: &mut SheetApp, ctx: &egui::Context, method: &str, p: &Json) -
                 ("app.language.japanese", "Interface Language: Japanese", ""),
             ] {
                 v.push(json!({"id": id, "label": label, "params": params, "enabled": true, "ui": true}));
+            }
+            if crate::zenda::ON {
+                v.push(json!({"id":"file.share", "label":app.ui.language.tr("Share"), "params":"", "enabled":true, "ui":true}));
+                v.retain(|command| command["id"] != "app.checkForUpdates");
             }
             ok(Json::Array(filter_commands(v, s("search"))))
         }

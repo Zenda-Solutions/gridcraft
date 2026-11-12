@@ -46,3 +46,5 @@ Generated-in-code art is original and has no file to list: the UI icon set (`cra
 | `docs/images/pivot.png` | GridCraft contributors | screenshot of GridCraft rendered offscreen (`crates/ui-egui/examples/snapshot.rs`) showing an original sample workbook | MIT OR Apache-2.0 | README screenshot; no third-party content |
 | `docs/images/format-chart.png` | GridCraft contributors | screenshot of GridCraft rendered offscreen (`crates/ui-egui/examples/snapshot.rs`) showing an original sample workbook | MIT OR Apache-2.0 | README screenshot; no third-party content |
 | `docs/images/page-break.png` | GridCraft contributors | screenshot of GridCraft rendered offscreen (`crates/ui-egui/examples/snapshot.rs`) showing an original sample workbook | MIT OR Apache-2.0 | README screenshot; no third-party content |
+
+| `assets/zenda/theo-icon-64.png` | Zenda Solutions | Work mascot, supplied by Zenda for its fork | Zenda Solutions, permission to redistribute with this build |

@@ -41,6 +41,7 @@ pub mod theme;
 mod updates_ui;
 pub mod widgets;
 mod window_ui;
+pub mod zenda;
 
 pub use window_ui::WindowUi;
 
@@ -188,6 +189,7 @@ pub struct Perf {
 }
 
 pub struct SheetApp {
+    pub zenda: zenda::Outbox,
     pub session: Session,
     pub ui: UiState,
     /// The window chrome to draw (see [`Chrome`]).
