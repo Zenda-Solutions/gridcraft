@@ -107,7 +107,7 @@ impl Host for PlanillaHost<'_> {
         self.filled(&cell).then(|| format!("{cell} ya tiene algo. ¿Lo reemplazo?"))
     }
 
-    fn target(&self, _name: &str, _args: &Value) -> Option<egui::Rect> {
+    fn target(&mut self, _name: &str, _args: &Value) -> Option<egui::Rect> {
         None
     }
 }
