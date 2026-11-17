@@ -42,6 +42,8 @@ mod updates_ui;
 pub mod widgets;
 mod window_ui;
 pub mod zenda;
+#[cfg(feature = "zenda")]
+pub mod zenda_chat;
 
 pub use window_ui::WindowUi;
 
@@ -190,6 +192,9 @@ pub struct Perf {
 
 pub struct SheetApp {
     pub zenda: zenda::Outbox,
+    /// Theo's chat inside Planilla: `None` until Work sends a chat key (its flag is on).
+    #[cfg(feature = "zenda")]
+    pub theo_chat: Option<zenda_theo::panel::Chat>,
     pub session: Session,
     pub ui: UiState,
     /// The window chrome to draw (see [`Chrome`]).

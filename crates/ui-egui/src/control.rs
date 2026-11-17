@@ -176,6 +176,16 @@ pub fn handle(app: &mut SheetApp, ctx: &egui::Context, method: &str, p: &Json) -
     let f = |k: &str| p.get(k).and_then(Json::as_f64).unwrap_or(0.0) as f32;
     let out = match method {
         "work.events" if crate::zenda::ON => ok(json!({"events": app.zenda.drain()})),
+        // Zenda's build: Work hands Theo's chat a short-lived key (zenda_chat.rs), only over this
+        // authenticated channel.
+        #[cfg(feature = "zenda")]
+        "zenda.chat.key" => match zenda_theo::key_params(p) {
+            Ok((token, secs)) => {
+                crate::zenda_chat::offer_key(app, &token, secs);
+                ok(json!({}))
+            }
+            Err(e) => err(e),
+        },
         "engine.execute" | "command" | "ui.menu.invoke" => {
             let Some(id) = s("command").or(s("id")) else { return err("missing `command`") };
             let params = p.get("params").cloned().unwrap_or(json!({}));

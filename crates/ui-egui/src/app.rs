@@ -28,6 +28,8 @@ impl SheetApp {
     pub fn new(session: Session, services: Services) -> SheetApp {
         SheetApp {
             zenda: Default::default(),
+            #[cfg(feature = "zenda")]
+            theo_chat: None,
             session,
             ui: UiState::default(),
             chrome: Chrome::default(),
@@ -102,6 +104,8 @@ impl SheetApp {
 
     /// Per-frame logic (control channel, screenshots). Call before `ui`.
     pub fn logic(&mut self, ctx: &egui::Context) {
+        #[cfg(feature = "zenda")]
+        crate::zenda_chat::tick(self, ctx);
         self.ensure_text_width(ctx);
         // A keytip control request lives one frame: the ribbon consumes it during `ui`, and
         // anything that never reached a control (collapsed ribbon, tab switch) is dropped.
@@ -229,6 +233,8 @@ impl SheetApp {
             tabs::sheet_tabs(self, ui);
             pivot_pane::show(self, ui);
             panes::show(self, ui);
+            #[cfg(feature = "zenda")]
+            crate::zenda_chat::show(self, ui);
             egui::CentralPanel::default().frame(egui::Frame::NONE.fill(t.grid_bg)).show(ui, |ui| {
                 let g0 = now_ms();
                 grid::show(self, ui);
