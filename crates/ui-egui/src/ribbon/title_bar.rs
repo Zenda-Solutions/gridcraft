@@ -134,7 +134,14 @@ pub fn title_bar(app: &mut SheetApp, ui: &mut Ui) {
                     }
                     let lang = app.ui.language;
                     if crate::zenda::theo_button(ui, lang.tr("Ask Theo for help"), lang.tr("Ask Theo about what is on screen")).clicked() {
-                        app.zenda.push("work.theo", crate::zenda::theo_context(app));
+                        // With Work's chat flag on, the chat opens here instead (zenda_chat.rs).
+                        #[cfg(feature = "zenda")]
+                        let in_tool = crate::zenda_chat::toggle(app);
+                        #[cfg(not(feature = "zenda"))]
+                        let in_tool = false;
+                        if !in_tool {
+                            app.zenda.push("work.theo", crate::zenda::theo_context(app));
+                        }
                     }
                 } else {
                     egui::Popup::menu(&share).show(|ui| {
