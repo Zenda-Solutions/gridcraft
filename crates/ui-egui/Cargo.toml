@@ -15,7 +15,7 @@ zenda = ["dep:zenda-theo"]
 
 [dependencies]
 # Shared with the other Zenda forks; lives in the WordCraft fork for now (egui range 0.36–0.37).
-zenda-theo = { git = "https://github.com/Zenda-Solutions/wordcraft", rev = "6161a87031d7642caafabdab663a0b71ad6735d1", optional = true, features = ["egui", "http"] }
+zenda-theo = { git = "https://github.com/Zenda-Solutions/wordcraft", rev = "8af4c86a406650504a3405729b0a8aa38e6ea661", optional = true, features = ["egui", "http"] }
 # The shared capture slot (`craft_ui::capture`) comes from the one craft-libs revision every
 # craft-libs dependency uses (see the root Cargo.toml).
 craft-ui = { git = "https://github.com/storytold/craft-libs", rev = "92d392cff132eaf53e13afff77f38b5c11b73aa0" }
