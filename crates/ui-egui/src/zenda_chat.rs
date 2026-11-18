@@ -115,6 +115,14 @@ impl PlanillaHost<'_> {
 }
 
 impl Host for PlanillaHost<'_> {
+    fn suggestions(&self) -> Vec<String> {
+        vec![
+            "Armame un presupuesto del mes con total".into(),
+            "Sumá la columna B y ponele formato de moneda".into(),
+            "¿Cómo hago un gráfico con estos datos?".into(),
+        ]
+    }
+
     fn skill(&self) -> String {
         SKILL.to_string()
     }

@@ -6583,7 +6583,7 @@ dependencies = [
 [[package]]
 name = "zenda-theo"
 version = "0.1.0"
-source = "git+https://github.com/Zenda-Solutions/wordcraft?rev=8af4c86a406650504a3405729b0a8aa38e6ea661#8af4c86a406650504a3405729b0a8aa38e6ea661"
+source = "git+https://github.com/Zenda-Solutions/wordcraft?rev=e4f507c40fb2807484f096bd01869f5cc8b7dcc1#e4f507c40fb2807484f096bd01869f5cc8b7dcc1"
 dependencies = [
  "egui",
  "serde",
