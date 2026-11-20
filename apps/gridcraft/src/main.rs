@@ -14,6 +14,7 @@ mod apple_events;
 mod control_server;
 #[cfg(any(target_os = "windows", test))]
 mod graphics;
+mod gpu;
 mod logging;
 #[cfg(target_os = "macos")]
 mod native_menu;
@@ -32,6 +33,13 @@ struct App(SheetApp, DocWindows, #[cfg(target_os = "macos")] Option<native_menu:
 
 impl eframe::App for App {
     fn logic(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
+        // The graphics device is gone (`gpu`): keep the workbooks and leave, as on_exit would.
+        if gpu::lost() {
+            gpu::save_recovered(&self.0.session);
+            print::finish_pending_jobs();
+            save_prefs(&self.0);
+            std::process::exit(gpu::EXIT_GPU_LOST);
+        }
         #[cfg(target_os = "macos")]
         {
             if self.2.is_none() && std::env::var_os("GRIDCRAFT_NO_NATIVE_MENU").is_none() {
@@ -381,6 +389,7 @@ fn main() -> eframe::Result<()> {
                 let Some(mut app) = pending.take() else {
                     return Err("the app was already created".into());
                 };
+                gpu::install(cc);
                 SheetApp::setup_context_for_language(&cc.egui_ctx, app.ui.dark, app.ui.language);
                 if let Some(port) = control_port {
                     match control_server::start(port, control_token.clone(), cc.egui_ctx.clone()) {
