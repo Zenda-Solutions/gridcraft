@@ -1050,3 +1050,19 @@ fn a_linked_paste_carries_the_files_trust_whatever_it_pastes() {
     assert!(sheet(&s).cell(b1).is_some_and(|c| c.formula.is_some()), "a linked paste of formats writes a formula");
     assert_eq!(trust(&s), Trust::FromFile);
 }
+
+#[test]
+fn new_workbooks_take_the_interface_language_name() {
+    // Zenda's Store E2E of Work 0.2.28: Planilla opened as «Book1» with the interface in Spanish.
+    let mut s = s();
+    s.new_workbook();
+    let before: Vec<String> = s.docs.iter().map(|d| d.title.clone()).collect();
+    assert!(before.iter().any(|t| t == "Book1"), "{before:?}");
+    s.set_book_name("Libro");
+    let after: Vec<String> = s.docs.iter().map(|d| d.title.clone()).collect();
+    assert!(after.iter().all(|t| !t.starts_with("Book")), "untitled books are renamed: {after:?}");
+    let i = s.new_workbook();
+    assert!(s.docs[i].title.starts_with("Libro"), "{}", s.docs[i].title);
+    s.set_book_name("");
+    assert_eq!(s.prefs.book_name, "Libro", "an empty name changes nothing");
+}

@@ -112,6 +112,20 @@ impl Language {
         }
     }
 
+    /// What Excel calls a new workbook in this language, before its number («Libro1»). Zenda's Store E2E
+    /// of Work 0.2.28 found Planilla opening as «Book1» with the interface in Spanish.
+    pub fn book_name(self) -> &'static str {
+        match self {
+            Language::Es => "Libro",
+            Language::PtBr => "Pasta",
+            Language::Fr => "Classeur",
+            Language::De => "Mappe",
+            Language::It => "Cartel",
+            Language::Nl => "Map",
+            _ => "Book",
+        }
+    }
+
     /// The language's code, as saved in `ui.json` and taken by `app.language.set`.
     pub const fn code(self) -> &'static str {
         match self {
