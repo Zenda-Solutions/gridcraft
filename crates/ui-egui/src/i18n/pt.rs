@@ -7,6 +7,7 @@ pub(super) fn translate(text: &str) -> Option<&'static str> {
         "Ask Theo for help" => "Peça ajuda ao Theo",
         "Ask Theo about what is on screen" => "Pergunte ao Theo sobre o que está na tela",
         "Paste" => "Colar",
+        "Edited" => "Editado",
         "Paste Values" => "Colar Valores",
         "Paste Formulas" => "Colar Fórmulas",
         "Paste Formatting" => "Colar Formatação",
