@@ -158,7 +158,9 @@ impl SheetApp {
             return;
         }
         let Some(d) = self.session.active() else { return };
-        let title = format!("{}{}", d.display_title(), if d.is_dirty() { " — Edited" } else { "" });
+        // «Libro1 — Editado» in Spanish (Zenda's Store E2E of Work 0.2.28 found «Book2 — Edited»).
+        let edited = if d.is_dirty() { format!(" — {}", self.ui.language.tr("Edited")) } else { String::new() };
+        let title = format!("{}{edited}", d.display_title());
         if self.grid.last_title.as_deref() != Some(title.as_str()) {
             ctx.send_viewport_cmd(egui::ViewportCommand::Title(title.clone()));
             self.grid.last_title = Some(title);
