@@ -368,6 +368,10 @@ pub struct Prefs {
     pub formula_bar: bool,
     /// The statistics the status bar shows for a selection (right-click the status bar).
     pub status_bar: StatusBarStats,
+    /// What a new workbook is called before its number, in the interface's language (Excel's
+    /// «Libro1» in Spanish). Set with the language, never saved.
+    #[serde(skip)]
+    pub book_name: String,
 }
 
 /// The selection statistics shown on the status bar, set with `view.statusBar`. Excel turns on
@@ -402,6 +406,7 @@ impl Default for Prefs {
             user_dictionary: vec![],
             formula_bar: true,
             status_bar: StatusBarStats::default(),
+            book_name: "Book".into(),
         }
     }
 }
@@ -543,15 +548,31 @@ impl Session {
             }
         }
     }
-    /// A new blank workbook titled `BookN`.
+    /// Names new workbooks `<name>N` from now on, and renames the untitled ones already open
+    /// (the blank «Book1» a tool starts with, before its language arrives).
+    pub fn set_book_name(&mut self, name: &str) {
+        let name = name.trim();
+        if name.is_empty() || name == self.prefs.book_name {
+            return;
+        }
+        let old = std::mem::replace(&mut self.prefs.book_name, name.to_string());
+        for d in self.docs.iter_mut().filter(|d| d.path.is_none()) {
+            if let Some(n) = d.title.strip_prefix(old.as_str()).filter(|n| !n.is_empty() && n.chars().all(|c| c.is_ascii_digit())) {
+                d.title = format!("{name}{n}");
+            }
+        }
+    }
+
+    /// A new blank workbook titled `BookN` (`LibroN` in Spanish, see [`Self::set_book_name`]).
     pub fn new_workbook(&mut self) -> usize {
-        let n = (1..).find(|n| !self.docs.iter().any(|d| d.title == format!("Book{n}") && d.path.is_none())).unwrap_or(1);
+        let book = self.prefs.book_name.clone();
+        let n = (1..).find(|n| !self.docs.iter().any(|d| d.title == format!("{book}{n}") && d.path.is_none())).unwrap_or(1);
         let mut wb = Workbook::new();
         for _ in 1..self.prefs.sheets_in_new_workbook.clamp(1, 255) {
             let name = wb.next_sheet_name();
             wb.sheets.push(Arc::new(gridcraft_model::Sheet::new(name)));
         }
-        self.add_document(DocState::new(wb, None, format!("Book{n}"), Trust::Local))
+        self.add_document(DocState::new(wb, None, format!("{book}{n}"), Trust::Local))
     }
 
     /// Journals a command, then trims the oldest entries past either cap. A recording in progress
