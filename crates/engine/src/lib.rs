@@ -573,11 +573,14 @@ impl Session {
         }
         gridcraft_model::workbook::set_sheet_base(base);
         for d in self.docs.iter_mut().filter(|d| d.path.is_none() && d.undo.is_empty()) {
-            let renames: Vec<(usize, String)> = d.wb.sheets.iter().enumerate()
-                .filter_map(|(i, s)| s.name.strip_prefix(old)
-                    .filter(|n| !n.is_empty() && n.chars().all(|c| c.is_ascii_digit()))
-                    .map(|n| (i, format!("{base}{n}"))))
-                .collect();
+            let renames: Vec<(usize, String)> =
+                d.wb.sheets
+                    .iter()
+                    .enumerate()
+                    .filter_map(|(i, s)| {
+                        s.name.strip_prefix(old).filter(|n| !n.is_empty() && n.chars().all(|c| c.is_ascii_digit())).map(|n| (i, format!("{base}{n}")))
+                    })
+                    .collect();
             if renames.is_empty() {
                 continue;
             }
