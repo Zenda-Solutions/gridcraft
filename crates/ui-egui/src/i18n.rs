@@ -112,6 +112,20 @@ impl Language {
         }
     }
 
+    /// The word new sheets are named after, as Excel does in this language (`Hoja1`). Zenda's E2E of
+    /// Work 0.2.30 found the sheet tab saying «Sheet1» with the interface in Spanish.
+    pub fn sheet_name(self) -> &'static str {
+        match self {
+            Language::Es => "Hoja",
+            Language::PtBr => "Planilha",
+            Language::Fr => "Feuil",
+            Language::De => "Tabelle",
+            Language::It => "Foglio",
+            Language::Nl => "Blad",
+            _ => "Sheet",
+        }
+    }
+
     /// What Excel calls a new workbook in this language, before its number («Libro1»). Zenda's Store E2E
     /// of Work 0.2.28 found Planilla opening as «Book1» with the interface in Spanish.
     pub fn book_name(self) -> &'static str {

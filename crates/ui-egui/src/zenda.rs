@@ -175,6 +175,17 @@ mod tests {
                 std::fs::write(path, format!("{:#?}", h.kittest_state().root())).unwrap();
             }
         }
+        // Zenda's E2E of Work 0.2.30: a screen reader heard «Undo», «Format Painter» and «Border
+        // presets» with Planilla in Spanish.
+        h.state_mut().ui.language = crate::i18n::Language::Es;
+        h.state_mut().ui.ribbon_tab = "Home".into();
+        h.run_steps(6);
+        for name in ["Deshacer", "Rehacer", "Pegar", "Copiar formato", "Tamaño de fuente", "Bordes predefinidos"] {
+            assert!(h.query_by_label(name).is_some(), "es: {name}");
+        }
+        for name in ["Undo", "Redo", "Paste", "Format Painter", "Font Size", "Border presets"] {
+            assert!(h.query_by_label(name).is_none(), "es: no English «{name}»");
+        }
     }
 
     #[test]

@@ -563,6 +563,32 @@ impl Session {
         }
     }
 
+    /// Names new sheets `<base>N` from now on (`Hoja1` in Spanish), and renames the sheets of the
+    /// untitled workbooks nobody touched yet (the blank «Libro1» a tool starts with, before its
+    /// language arrives). A workbook with any change keeps its names: formulas may point at them.
+    pub fn set_sheet_name(&mut self, base: &'static str) {
+        let old = gridcraft_model::workbook::sheet_base();
+        if base.is_empty() || base == old {
+            return;
+        }
+        gridcraft_model::workbook::set_sheet_base(base);
+        for d in self.docs.iter_mut().filter(|d| d.path.is_none() && d.undo.is_empty()) {
+            let renames: Vec<(usize, String)> = d.wb.sheets.iter().enumerate()
+                .filter_map(|(i, s)| s.name.strip_prefix(old)
+                    .filter(|n| !n.is_empty() && n.chars().all(|c| c.is_ascii_digit()))
+                    .map(|n| (i, format!("{base}{n}"))))
+                .collect();
+            if renames.is_empty() {
+                continue;
+            }
+            let wb = Arc::make_mut(&mut d.wb);
+            for (i, name) in renames {
+                Arc::make_mut(&mut wb.sheets[i]).name = name;
+            }
+            d.saved = d.wb.clone();
+        }
+    }
+
     /// A new blank workbook titled `BookN` (`LibroN` in Spanish, see [`Self::set_book_name`]).
     pub fn new_workbook(&mut self) -> usize {
         let book = self.prefs.book_name.clone();

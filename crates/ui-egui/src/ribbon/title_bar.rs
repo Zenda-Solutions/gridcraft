@@ -76,7 +76,9 @@ pub fn title_bar(app: &mut SheetApp, ui: &mut Ui) {
             let can_redo = gridcraft_engine::cmd::can_redo(&app.session).is_ok();
             // Named and marked enabled or not for assistive technology (and the UI tests).
             let undo = icon_button(ui, Icon::Undo, if can_undo { t.text_dim } else { t.text_disabled }, "Undo", vec2(26.0, ch));
-            undo.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, can_undo, "Undo"));
+            // Read outside the closure: it runs with the context locked, and the language lives there.
+            let name = crate::widgets::tr(ui, "Undo");
+            undo.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, can_undo, name));
             if undo.clicked() && can_undo {
                 app.run_or_alert("edit.undo", json!({}));
             }
@@ -97,7 +99,9 @@ pub fn title_bar(app: &mut SheetApp, ui: &mut Ui) {
                 }
             });
             let redo = icon_button(ui, Icon::Redo, if can_redo { t.text_dim } else { t.text_disabled }, "Redo", vec2(26.0, ch));
-            redo.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, can_redo, "Redo"));
+            // Read outside the closure: it runs with the context locked, and the language lives there.
+            let name = crate::widgets::tr(ui, "Redo");
+            redo.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, can_redo, name));
             if redo.clicked() && can_redo {
                 app.run_or_alert("edit.redo", json!({}));
             }
