@@ -1977,6 +1977,7 @@ dependencies = [
  "gridcraft-engine",
  "gridcraft-mcp",
  "gridcraft-ui-egui",
+ "gridcraft-xlsx",
  "image",
  "log",
  "muda",

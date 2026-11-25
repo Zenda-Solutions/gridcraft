@@ -264,12 +264,12 @@ static SHEET_BASE: RwLock<&'static str> = RwLock::new("Sheet");
 
 /// Names new sheets `<base>N` from now on (Excel in Spanish names them `Hoja1`).
 pub fn set_sheet_base(base: &'static str) {
-    *SHEET_BASE.write().unwrap() = base;
+    *SHEET_BASE.write().unwrap_or_else(std::sync::PoisonError::into_inner) = base;
 }
 
 /// The word new sheets are named after.
 pub fn sheet_base() -> &'static str {
-    *SHEET_BASE.read().unwrap()
+    *SHEET_BASE.read().unwrap_or_else(std::sync::PoisonError::into_inner)
 }
 
 impl Workbook {
