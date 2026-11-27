@@ -181,10 +181,10 @@ mod tests {
         h.state_mut().ui.ribbon_tab = "Home".into();
         h.run_steps(6);
         for name in ["Deshacer", "Rehacer", "Pegar", "Copiar formato", "Tamaño de fuente", "Bordes predefinidos"] {
-            assert!(h.query_by_label(name).is_some(), "es: {name}");
+            assert!(h.query_all_by_label(name).next().is_some(), "es: {name}");
         }
         for name in ["Undo", "Redo", "Paste", "Format Painter", "Font Size", "Border presets"] {
-            assert!(h.query_by_label(name).is_none(), "es: no English «{name}»");
+            assert!(h.query_all_by_label(name).next().is_none(), "es: no English «{name}»");
         }
     }
 
