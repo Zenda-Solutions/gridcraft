@@ -1,7 +1,7 @@
 //! Workbooks.
 
-use std::sync::Arc;
 use std::sync::atomic::{AtomicUsize, Ordering};
+use std::sync::{Arc, RwLock};
 
 use gridcraft_core::DateSystem;
 use gridcraft_formula::Expr;
@@ -258,11 +258,25 @@ impl std::fmt::Debug for ActiveSheet {
     }
 }
 
+/// The word new sheets are named after (`Sheet1`, `Hoja1`), set for the interface's language with
+/// [`set_sheet_base`]. English until then, so files and tests see Excel's default.
+static SHEET_BASE: RwLock<&'static str> = RwLock::new("Sheet");
+
+/// Names new sheets `<base>N` from now on (Excel in Spanish names them `Hoja1`).
+pub fn set_sheet_base(base: &'static str) {
+    *SHEET_BASE.write().unwrap_or_else(std::sync::PoisonError::into_inner) = base;
+}
+
+/// The word new sheets are named after.
+pub fn sheet_base() -> &'static str {
+    *SHEET_BASE.read().unwrap_or_else(std::sync::PoisonError::into_inner)
+}
+
 impl Workbook {
-    /// A new workbook with one sheet, "Sheet1".
+    /// A new workbook with one sheet, "Sheet1" (or the language's word, see [`set_sheet_base`]).
     pub fn new() -> Workbook {
         Workbook {
-            sheets: vec![Arc::new(Sheet::new("Sheet1"))],
+            sheets: vec![Arc::new(Sheet::new(format!("{}1", sheet_base())))],
             names: vec![],
             styles: StyleTable::default(),
             theme: Theme::default(),
@@ -304,9 +318,10 @@ impl Workbook {
     pub fn active(&self) -> Option<&Sheet> {
         self.sheet(self.active_sheet())
     }
-    /// A fresh sheet name `SheetN` not in use.
+    /// A fresh sheet name `SheetN` (or the language's word, see [`set_sheet_base`]) not in use.
     pub fn next_sheet_name(&self) -> String {
-        (1..).map(|n| format!("Sheet{n}")).find(|n| self.sheet_index(n).is_none()).unwrap_or_else(|| "Sheet".into())
+        let base = sheet_base();
+        (1..).map(|n| format!("{base}{n}")).find(|n| self.sheet_index(n).is_none()).unwrap_or_else(|| base.into())
     }
     /// Validates a sheet name like Excel: 1–31 chars, none of `: \ / ? * [ ]`, not starting or
     /// ending with `'`, unique (case-insensitive) unless it is `except`'s own name.

@@ -55,7 +55,9 @@ pub(crate) fn sample(ui: &mut Ui, borders: &Borders, theme: &Theme) {
     ui.add_space(8.0);
     ui.label("Preview");
     let (area, response) = ui.allocate_exact_size(vec2(248.0, 104.0), Sense::hover());
-    response.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Label, true, "Border preview"));
+    // Read outside the closure: it runs with the context locked, and the language lives there.
+    let name = crate::widgets::tr(ui, "Border preview");
+    response.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Label, true, name));
     let t = Tokens::get(ui.ctx());
     ui.painter().rect_filled(area, 4.0, t.grid_bg);
     ui.painter().rect_stroke(area, 4.0, Stroke::new(1.0, t.input_border), StrokeKind::Inside);

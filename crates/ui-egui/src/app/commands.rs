@@ -197,6 +197,7 @@ impl SheetApp {
                     Some(l) => {
                         self.ui.language = l;
                         self.session.set_book_name(l.book_name());
+                        self.session.set_sheet_name(l.sheet_name());
                         Ok(json!({"language": l}))
                     }
                     None => Err(format!("unknown language {code:?} (use one of {})", i18n::Language::code_list(", "))),

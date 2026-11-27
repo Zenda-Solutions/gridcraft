@@ -12,9 +12,9 @@
 #[cfg(target_os = "macos")]
 mod apple_events;
 mod control_server;
+mod gpu;
 #[cfg(any(target_os = "windows", test))]
 mod graphics;
-mod gpu;
 mod logging;
 #[cfg(target_os = "macos")]
 mod native_menu;
